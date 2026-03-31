@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HGP-AP Walk-in Registration | ลงทะเบียนเข้าพื้นที่</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+      color: #1e293b;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: #1b3a5c;
+      color: white;
+      border-radius: 14px 14px 0 0;
+      padding: 22px 24px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 6px;
+      background: #b91c1c;
+    }
+    .header-logo {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #cadcfc;
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .header h1 span {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+      color: #cadcfc;
+      margin-top: 2px;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 0 0 14px 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #2e5090;
+      text-transform: uppercase;
+      margin: 20px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* Form group */
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+    label .th { display: block; }
+    label .en {
+      font-size: 11px;
+      font-weight: 400;
+      color: #64748b;
+    }
+    label .req { color: #b91c1c; margin-left: 2px; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1e293b;
+      background: #f8fafc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2e5090;
+      box-shadow: 0 0 0 3px rgba(46,80,144,0.12);
+      background: white;
+    }
+    input.error, select.error {
+      border-color: #b91c1c;
+      box-shadow: 0 0 0 3px rgba(185,28,28,0.1);
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* Radio / Inline options */
+    .radio-group, .gender-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .radio-btn {
+      flex: 1;
+      min-width: 100px;
+    }
+    .radio-btn input[type="radio"] { display: none; }
+    .radio-btn label {
+      display: block;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      background: #f8fafc;
+      margin: 0;
+    }
+    .radio-btn input:checked + label {
+      border-color: #2e5090;
+      background: #eff6ff;
+      color: #2e5090;
+      font-weight: 700;
+    }
+    .radio-btn.danger input:checked + label {
+      border-color: #b91c1c;
+      background: #fff5f5;
+      color: #b91c1c;
+    }
+
+    /* Conditional section */
+    .conditional {
+      display: none;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+    .conditional.show { display: block; }
+
+    /* Helper text */
+    .helper {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* Error message */
+    .err-msg {
+      font-size: 11px;
+      color: #b91c1c;
+      margin-top: 4px;
+      display: none;
+    }
+    .err-msg.show { display: block; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: #1b3a5c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .btn-submit:hover { background: #2e5090; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* QR Result */
+    .qr-result {
+      display: none;
+      text-align: center;
+      padding: 28px 20px;
+    }
+    .qr-result.show { display: block; }
+    .qr-icon { font-size: 40px; margin-bottom: 10px; }
+    .qr-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1b3a5c;
+      margin-bottom: 4px;
+    }
+    .qr-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .qr-img-wrap {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      display: inline-block;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .qr-img-wrap img {
+      width: 220px;
+      height: 220px;
+      display: block;
+    }
+    .qr-info {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .qr-info-row {
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+      padding: 4px 0;
+    }
+    .qr-info-row .key {
+      color: #64748b;
+      min-width: 100px;
+      font-weight: 600;
+    }
+    .qr-info-row .val { color: #1e293b; font-weight: 500; }
+    .qr-expiry {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #b91c1c;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-save {
+      width: 100%;
+      padding: 13px;
+      background: #b91c1c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn-reset {
+      width: 100%;
+      padding: 11px;
+      background: white;
+      color: #2e5090;
+      border: 1.5px solid #2e5090;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">HGP-AP · HONDA R&D ASIA PACIFIC</div>
+    <h1>
+      Walk-in Registration
+      <span>ลงทะเบียนเข้าพื้นที่ HGP-AP</span>
+    </h1>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card" id="formCard">
+    <form id="regForm" novalidate>
+
+      <!-- Section: Employee ID -->
+      <div class="section-label">รหัสพนักงาน · Employee ID</div>
+
+      <div class="form-group">
+        <label>
+          <span class="th">มีรหัสพนักงานหรือไม่? <span class="req">*</span></span>
+          <span class="en">Do you have an Employee ID?</span>
+        </label>
+        <div class="radio-group">
+          <div class="radio-btn">
+            <input type="radio" name="hasEmpID" id="hasYes" value="yes">
+            <label for="hasYes">✓ มี / Yes</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="hasEmpID" id="hasNo" value="no">
+            <label for="hasNo">✗ ไม่มี / No</label>
+          </div>
+        </div>
+        <div class="err-msg" id="err-hasEmpID">กรุณาเลือก / Please select</div>
+      </div>
+
+      <div class="conditional" id="empIDSection">
+        <div class="form-group" style="margin-bottom:0">
+          <label for="empID">
+            <span class="th">รหัสพนักงาน <span class="req">*</span></span>
+            <span class="en">Employee ID</span>
+          </label>
+          <input type="text" id="empID" placeholder="e.g. RT990354, J0901161">
+          <div class="err-msg" id="err-empID">กรุณากรอกรหัสพนักงาน / Please enter Employee ID</div>
+        </div>
+      </div>
+
+      <!-- Section: Personal Info -->
+      <div class="section-label">ข้อมูลส่วนตัว · Personal Information</div>
+
+      <div class="form-group">
+        <label for="fullName">
+          <span class="th">ชื่อ-นามสกุล <span class="req">*</span></span>
+          <span class="en">Full Name</span>
+        </label>
+        <input type="text" id="fullName" placeholder="e.g. Somchai Jaidee / สมชาย ใจดี">
+        <div class="err-msg" id="err-fullName">กรุณากรอกชื่อ-นามสกุล / Please enter full name</div>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <span class="th">เพศ <span class="req">*</span></span>
+          <span class="en">Gender</span>
+        </label>
+        <div class="radio-group gender-group">
+          <div class="radio-btn">
+            <input type="radio" name="gender" id="gMale" value="Male">
+            <label for="gMale">♂ ชาย / Male</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="gender" id="gFemale" value="Female">
+            <label for="gFemale">♀ หญิง / Female</label>
+          </div>
+          <div class="radio-btn">
+            <input type="radio" name="gender" id="gOther" value="Other">
+            <label for="gOther">อื่นๆ / Other</label>
+          </div>
+        </div>
+        <div class="err-msg" id="err-gender">กรุณาเลือกเพศ / Please select gender</div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">
+          <span class="th">เบอร์โทรศัพท์ <span class="req">*</span></span>
+          <span class="en">Phone Number</span>
+        </label>
+        <input type="tel" id="phone" placeholder="e.g. 081-234-5678">
+        <div class="err-msg" id="err-phone">กรุณากรอกเบอร์โทรศัพท์ / Please enter phone number</div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">
+          <span class="th">อีเมล</span>
+          <span class="en">Email (Optional)</span>
+        </label>
+        <input type="email" id="email" placeholder="e.g. name@company.com">
+      </div>
+
+      <!-- Section: Company Info -->
+      <div class="section-label">ข้อมูลบริษัท · Company Information</div>
+
+      <div class="form-group">
+        <label for="category">
+          <span class="th">ประเภทบุคลากร <span class="req">*</span></span>
+          <span class="en">Personnel Category</span>
+        </label>
+        <select id="category">
+          <option value="">-- เลือก / Select --</option>
+          <option value="HRAP">HRAP</option>
+          <option value="Honda Group">Honda Group</option>
+          <option value="Non Honda">Non Honda</option>
+        </select>
+        <div class="err-msg" id="err-category">กรุณาเลือกประเภท / Please select category</div>
+      </div>
+
+      <!-- HRAP subtype (conditional) -->
+      <div class="conditional" id="hrapSubSection">
+        <div class="form-group" style="margin-bottom:0">
+          <label for="hrapSub">
+            <span class="th">ประเภทพนักงาน HRAP <span class="req">*</span></span>
+            <span class="en">HRAP Employee Type</span>
+          </label>
+          <select id="hrapSub">
+            <option value="">-- เลือก / Select --</option>
+            <option value="Local">Local</option>
+            <option value="Outsource / Contract">Outsource / Contract</option>
+            <option value="Expat">Expat</option>
+          </select>
+          <div class="err-msg" id="err-hrapSub">กรุณาเลือกประเภท HRAP / Please select HRAP type</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="company">
+          <span class="th">ชื่อบริษัท <span class="req">*</span></span>
+          <span class="en">Company Name</span>
+        </label>
+        <input type="text" id="company" placeholder="e.g. Honda R&D Asia Pacific, Toyota Motor">
+        <div class="err-msg" id="err-company">กรุณากรอกชื่อบริษัท / Please enter company name</div>
+      </div>
+
+      <div class="form-group">
+        <label for="dept">
+          <span class="th">แผนก / ตำแหน่ง <span class="req">*</span></span>
+          <span class="en">Department / Position</span>
+        </label>
+        <input type="text" id="dept" placeholder="e.g. HGP-AP, Driver, Quality">
+        <div class="err-msg" id="err-dept">กรุณากรอกแผนก / Please enter department</div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit" id="submitBtn">
+        ✓ &nbsp; ลงทะเบียนและรับ QR Code
+        <span style="display:block; font-size:11px; font-weight:400; margin-top:2px; opacity:0.8;">
+          Register &amp; Get QR Code
+        </span>
+      </button>
+
+    </form>
+  </div>
+
+  <!-- QR Result Card -->
+  <div class="card qr-result" id="qrResult">
+    <div class="qr-icon">✅</div>
+    <div class="qr-title">QR Code พร้อมใช้งานแล้ว!</div>
+    <div class="qr-sub">
+      ลงทะเบียนสำเร็จ · Registration Complete<br>
+      <strong>กด Screenshot เพื่อบันทึก QR Code ลงในโทรศัพท์</strong><br>
+      <span style="font-size:12px; color:#94a3b8;">Take a screenshot to save your QR Code</span>
+    </div>
+
+    <div class="qr-img-wrap">
+      <img id="qrImage" src="" alt="QR Code">
+    </div>
+
+    <div class="qr-info" id="qrInfo"></div>
+
+    <div class="qr-expiry">
+      ⏳ &nbsp; QR Code นี้มีอายุ 1 ปี หมดอายุ: <strong id="expiryDisplay"></strong>
+    </div>
+
+    <button class="btn-save" onclick="downloadQR()">
+      📥 &nbsp; บันทึก QR Code · Save QR Code
+    </button>
+    <button class="btn-reset" onclick="resetForm()">
+      ← &nbsp; ลงทะเบียนใหม่ · New Registration
+    </button>
+  </div>
+
+  <div class="footer">
+    HGP-AP Entry Control System · Honda R&D Asia Pacific Co., Ltd.<br>
+    QR Code นี้ใช้สำหรับเข้า-ออกพื้นที่ HGP-AP เท่านั้น
+  </div>
+
+</div>
+
+<script>
+  // ── Conditional fields ─────────────────────────
+  document.querySelectorAll('input[name="hasEmpID"]').forEach(el => {
+    el.addEventListener('change', () => {
+      const show = el.value === 'yes';
+      document.getElementById('empIDSection').classList.toggle('show', show);
+      if (!show) document.getElementById('empID').value = '';
+    });
+  });
+
+  document.getElementById('category').addEventListener('change', function() {
+    const show = this.value === 'HRAP';
+    document.getElementById('hrapSubSection').classList.toggle('show', show);
+    if (!show) document.getElementById('hrapSub').value = '';
+  });
+
+  // ── Validation helpers ─────────────────────────
+  function showErr(id, show) {
+    document.getElementById('err-' + id).classList.toggle('show', show);
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('error', show);
+  }
+
+  function validate() {
+    let ok = true;
+
+    // Has Employee ID
+    const hasEmpID = document.querySelector('input[name="hasEmpID"]:checked');
+    showErr('hasEmpID', !hasEmpID);
+    if (!hasEmpID) ok = false;
+
+    // Employee ID (if yes)
+    if (hasEmpID && hasEmpID.value === 'yes') {
+      const empID = document.getElementById('empID').value.trim();
+      showErr('empID', !empID);
+      if (!empID) ok = false;
+    }
+
+    // Full name
+    const fullName = document.getElementById('fullName').value.trim();
+    showErr('fullName', !fullName);
+    if (!fullName) ok = false;
+
+    // Gender
+    const gender = document.querySelector('input[name="gender"]:checked');
+    showErr('gender', !gender);
+    if (!gender) ok = false;
+
+    // Phone
+    const phone = document.getElementById('phone').value.trim();
+    showErr('phone', !phone);
+    if (!phone) ok = false;
+
+    // Category
+    const cat = document.getElementById('category').value;
+    showErr('category', !cat);
+    if (!cat) ok = false;
+
+    // HRAP subtype
+    if (cat === 'HRAP') {
+      const sub = document.getElementById('hrapSub').value;
+      showErr('hrapSub', !sub);
+      if (!sub) ok = false;
+    }
+
+    // Company
+    const company = document.getElementById('company').value.trim();
+    showErr('company', !company);
+    if (!company) ok = false;
+
+    // Dept
+    const dept = document.getElementById('dept').value.trim();
+    showErr('dept', !dept);
+    if (!dept) ok = false;
+
+    return ok;
+  }
+
+  // ── Generate QR ────────────────────────────────
+  function buildQRValue(data) {
+    // Format: WALKIN|EmpID|FullName|Category|Dept|Company|Phone|Expiry
+    const expiry = getExpiryDate();
+    return [
+      'WALKIN',
+      data.empID,
+      data.fullName,
+      data.category,
+      data.dept,
+      data.company,
+      data.phone,
+      expiry
+    ].join('|');
+  }
+
+  function getExpiryDate() {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    const yy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yy}${mm}${dd}`;
+  }
+
+  function formatExpiryDisplay(str) {
+    // YYYYMMDD → DD/MM/YYYY
+    return `${str.slice(6,8)}/${str.slice(4,6)}/${str.slice(0,4)}`;
+  }
+
+  function getQRUrl(text) {
+    return `https://quickchart.io/qr?size=300&margin=2&text=${encodeURIComponent(text)}`;
+  }
+
+  // ── Form submit ────────────────────────────────
+  document.getElementById('regForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังสร้าง QR Code...';
+
+    const hasEmpID = document.querySelector('input[name="hasEmpID"]:checked').value;
+    const empID    = hasEmpID === 'yes' ? document.getElementById('empID').value.trim().toUpperCase() : '';
+    const fullName = document.getElementById('fullName').value.trim();
+    const gender   = document.querySelector('input[name="gender"]:checked').value;
+    const phone    = document.getElementById('phone').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const cat      = document.getElementById('category').value;
+    const hrapSub  = cat === 'HRAP' ? document.getElementById('hrapSub').value : '';
+    const company  = document.getElementById('company').value.trim();
+    const dept     = document.getElementById('dept').value.trim();
+    const expiry   = getExpiryDate();
+
+    const data = { empID, fullName, gender, phone, email, category: cat, hrapSub, company, dept };
+    const qrValue = buildQRValue(data);
+    const qrUrl   = getQRUrl(qrValue);
+
+    // Build info HTML
+    const rows = [
+      { k: 'ชื่อ / Name',        v: fullName },
+      { k: 'รหัส / ID',          v: empID || '-' },
+      { k: 'ประเภท / Category',  v: cat + (hrapSub ? ` · ${hrapSub}` : '') },
+      { k: 'แผนก / Dept',        v: dept },
+      { k: 'บริษัท / Company',   v: company },
+      { k: 'เบอร์ / Phone',      v: phone },
+      { k: 'เพศ / Gender',       v: gender },
+    ];
+    if (email) rows.push({ k: 'อีเมล / Email', v: email });
+
+    document.getElementById('qrInfo').innerHTML = rows.map(r =>
+      `<div class="qr-info-row"><span class="key">${r.k}</span><span class="val">${r.v}</span></div>`
+    ).join('');
+
+    document.getElementById('expiryDisplay').textContent = formatExpiryDisplay(expiry);
+
+    const img = document.getElementById('qrImage');
+    img.onload = () => {
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('qrResult').classList.add('show');
+      window.scrollTo(0, 0);
+    };
+    img.onerror = () => {
+      btn.disabled = false;
+      btn.innerHTML = '✓ &nbsp; ลงทะเบียนและรับ QR Code<span style="display:block;font-size:11px;font-weight:400;margin-top:2px;opacity:0.8;">Register &amp; Get QR Code</span>';
+      alert('ไม่สามารถสร้าง QR Code ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต\nCould not generate QR Code. Please check your internet connection.');
+    };
+    img.src = qrUrl;
+
+    // Store for download
+    window._qrUrl = qrUrl;
+    window._qrName = fullName.replace(/\s+/g, '_');
+  });
+
+  // ── Download QR ────────────────────────────────
+  function downloadQR() {
+    const a = document.createElement('a');
+    a.href = window._qrUrl;
+    a.download = `HGPAP_QR_${window._qrName}.png`;
+    a.target = '_blank';
+    a.click();
+  }
+
+  // ── Reset form ─────────────────────────────────
+  function resetForm() {
+    document.getElementById('regForm').reset();
+    document.getElementById('empIDSection').classList.remove('show');
+    document.getElementById('hrapSubSection').classList.remove('show');
+    document.querySelectorAll('.err-msg').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false;
+    btn.innerHTML = '✓ &nbsp; ลงทะเบียนและรับ QR Code<span style="display:block;font-size:11px;font-weight:400;margin-top:2px;opacity:0.8;">Register &amp; Get QR Code</span>';
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('qrResult').classList.remove('show');
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
